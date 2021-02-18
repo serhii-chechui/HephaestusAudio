@@ -1,0 +1,15 @@
+{
+    "name": "Unity.HephaestusAudio.Editor",
+    "references": [
+        "GUID:0e48b96081d7c4def8598d99b5052ade"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
