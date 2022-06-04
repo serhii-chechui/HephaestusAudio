@@ -7,5 +7,8 @@ namespace HephaestusMobile.Audio.Manager {
     public class AudioManagerConfig : ScriptableObject {
         public SoundLibrary soundLibrary;
         public AudioMixer audioMixer;
+        
+        public float minSoundsVolume = -80f;
+        public float maxSoundsVolume = 20f;
     }
 }

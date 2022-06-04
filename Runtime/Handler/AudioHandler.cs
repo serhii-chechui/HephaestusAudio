@@ -3,9 +3,10 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace HephaestusMobile.Audio.Handler {
-    public class AudioHandler : MonoBehaviour {
-        
+namespace HephaestusMobile.Audio.Handler
+{
+    public class AudioHandler : MonoBehaviour
+    {
         public event Action OnClipPlay;
         public event Action OnClipEnded;
         public event Action OnClipStop;
@@ -14,9 +15,13 @@ namespace HephaestusMobile.Audio.Handler {
 
         public bool IsPlaying => audioSource.isPlaying;
 
-        [SerializeField] private AudioSource audioSource;
+        public string AudioClipName { get; private set; }
 
-        public void Initialize(AudioMixerGroup audioMixerGroup) {
+        [SerializeField]
+        private AudioSource audioSource;
+
+        public void Initialize(AudioMixerGroup audioMixerGroup)
+        {
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.outputAudioMixerGroup = audioMixerGroup;
             audioSource.loop = false;
@@ -24,22 +29,28 @@ namespace HephaestusMobile.Audio.Handler {
             audioSource.volume = 1f;
         }
 
-        public void Play(AudioClip clip, bool loop = false, float volume = 1f, float delay = 0f) {
+        public void Play(string clipName, AudioClip clip, bool loop = false, float volume = 1f, float delay = 0f)
+        {
+            AudioClipName = clipName;
             audioSource.clip = clip;
             audioSource.loop = loop;
             audioSource.volume = volume;
-            audioSource.Play((ulong)delay);
+            audioSource.Play((ulong) delay);
             OnClipPlay?.Invoke();
-            if (_playingAudionCoroutine != null) {
+            if (_playingAudionCoroutine != null)
+            {
                 StopCoroutine(WaitUntilClipEnd_Co());
                 _playingAudionCoroutine = null;
-            } else {
+            }
+            else
+            {
                 _playingAudionCoroutine = StartCoroutine(WaitUntilClipEnd_Co());
             }
-            
         }
 
-        public void Stop() {
+        public void Stop()
+        {
+            AudioClipName = string.Empty;
             audioSource.Stop();
             audioSource.clip = null;
             OnClipEnded?.Invoke();
@@ -49,7 +60,8 @@ namespace HephaestusMobile.Audio.Handler {
             _playingAudionCoroutine = null;
         }
 
-        public void Dismiss() {
+        public void Dismiss()
+        {
             audioSource.Stop();
             audioSource.clip = null;
             if (_playingAudionCoroutine == null) return;
@@ -57,7 +69,8 @@ namespace HephaestusMobile.Audio.Handler {
             _playingAudionCoroutine = null;
         }
 
-        IEnumerator WaitUntilClipEnd_Co() {
+        IEnumerator WaitUntilClipEnd_Co()
+        {
             yield return new WaitUntil(() => !audioSource.isPlaying);
             OnClipEnded?.Invoke();
             _playingAudionCoroutine = null;

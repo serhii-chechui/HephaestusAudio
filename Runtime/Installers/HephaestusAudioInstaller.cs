@@ -1,0 +1,13 @@
+using HephaestusMobile.Audio.Manager;
+using Zenject;
+
+namespace Installers
+{
+    public class HephaestusAudioInstaller : Installer<HephaestusAudioInstaller>
+    {
+        public override void InstallBindings()
+        {
+            Container.BindInterfacesTo<AudioManager>().AsSingle();
+        }
+    }
+}
