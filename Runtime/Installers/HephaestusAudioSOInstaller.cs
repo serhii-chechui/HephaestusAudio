@@ -5,7 +5,7 @@ using Zenject;
 namespace Installers
 {
     [CreateAssetMenu(fileName = "HephaestusSOInstaller", menuName = "HephaestusMobile/Core/Audio/HephaestusSOInstaller")]
-    public class HephaestusSOInstaller : ScriptableObjectInstaller<HephaestusSOInstaller>
+    public class HephaestusAudioSOInstaller : ScriptableObjectInstaller<HephaestusAudioSOInstaller>
     {
         [SerializeField]
         private AudioManagerConfig _audioManagerConfig;
