@@ -1,7 +1,7 @@
 using HephaestusMobile.Audio.Manager;
 using Zenject;
 
-namespace Installers
+namespace HephaestusMobile.Audio.Installers
 {
     public class HephaestusAudioInstaller : Installer<HephaestusAudioInstaller>
     {
