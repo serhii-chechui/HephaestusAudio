@@ -10,11 +10,15 @@ namespace HephaestusMobile.Audio.Manager {
         private AudioManagerConfig _audioManagerConfig;
 
         private AudioManagerHandler _audioManagerHandler;
+
+        private AudioListener _audioListener;
         
         public void Initialize()
         {
             _audioManagerHandler = new GameObject("AudioManagerHandler").AddComponent<AudioManagerHandler>();
             _audioManagerHandler.Initialize(_audioManagerConfig);
+
+            _audioListener = _audioManagerHandler.gameObject.AddComponent<AudioListener>();
         }
 
         public void Dispose()
