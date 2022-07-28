@@ -1,6 +1,6 @@
 {
   "name": "com.wtfgames.hephaestus.audio",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "displayName": "Hephaestus Audio",
   "description": "Hephaestus Audio is a part of the Hephaestus Core framework that helps operate with audio.",
   "unity": "2019.2",
