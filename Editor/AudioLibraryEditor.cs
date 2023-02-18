@@ -98,10 +98,13 @@ namespace Hephaestus.Audio.Editor {
         {
 
             var audioLibrary = (AudioLibrary)target;
-            
-            _keys = audioLibrary.audioLibraryConstants.soundMapKeys.ToArray();
-            ConvertIntValuesFromKeys(_keys);
-            
+
+            if (audioLibrary.audioLibraryConstants != null)
+            {
+                _keys = audioLibrary.audioLibraryConstants.soundMapKeys.ToArray();
+                ConvertIntValuesFromKeys(_keys);
+            }
+
             base.OnInspectorGUI();
             
             if(_reorderableList == null) return;
