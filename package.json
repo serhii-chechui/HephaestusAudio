@@ -25,6 +25,8 @@
       "path": "Samples~/MusicAndSound"
     }
   ],
+  "publishConfig": {
+    "registry": "http://18.197.210.148:4873/"
+  },
   "hideInEditor": false
-}
-        
+}        
