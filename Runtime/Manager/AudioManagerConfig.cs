@@ -1,11 +1,12 @@
 ﻿using HephaestusMobile.Audio.SoundsLibrary;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Serialization;
 
 namespace HephaestusMobile.Audio.Manager {
     [CreateAssetMenu(fileName = "AudioManagerConfig", menuName = "HephaestusMobile/Core/Audio/AudioManagerConfig")]
     public class AudioManagerConfig : ScriptableObject {
-        public SoundLibrary soundLibrary;
+        public AudioLibrary audioLibrary;
         public AudioMixer audioMixer;
         
         public float minSoundsVolume = -80f;

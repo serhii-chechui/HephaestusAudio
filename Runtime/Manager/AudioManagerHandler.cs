@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace HephaestusMobile.Audio.Manager
     {
         private AudioManagerConfig _audioManagerConfig;
         
-        private SoundLibrary _soundLibrary;
+        private AudioLibrary _audioLibrary;
         
         private AudioMixer _audioMixer;
 
@@ -40,8 +41,8 @@ namespace HephaestusMobile.Audio.Manager
                 soundsAudioHandlers = new List<AudioHandler> {soundAudioHandler};
             }
 
-            if (_soundLibrary == null) {
-                _soundLibrary = audioManagerConfig.soundLibrary;
+            if (_audioLibrary == null) {
+                _audioLibrary = audioManagerConfig.audioLibrary;
             }
 
             if (_audioMixer == null) {
@@ -75,44 +76,44 @@ namespace HephaestusMobile.Audio.Manager
             }
         }
         
-        public AudioHandler PlayMusicClip(string soundClipName, bool loopSound = true, bool allowMultiple = true, float volume = 0.5F, float delay = 0f) {
+        public AudioHandler PlayMusicClip(int soundClipKey, bool loopSound = true, bool allowMultiple = true, float volume = 0.5F, float delay = 0f) {
             
-            var clip = _soundLibrary.soundsList.Find(x => x.soundName == soundClipName).sound;
+            var clip = _audioLibrary.audioPairsList.Find(x => x.key == soundClipKey).audioClip;
             
             var audioHandler = new GameObject("Music-Audio-Handler", typeof(AudioHandler)).GetComponent<AudioHandler>();
             audioHandler.transform.SetParent(transform);
             audioHandler.Initialize(_musicAudioMixerGroup);
             musicAudioHandlers.Add(audioHandler);
 
-            audioHandler.Play(soundClipName, clip, loopSound, volume, delay);
+            audioHandler.Play(soundClipKey, clip, loopSound, volume, delay);
 
             return audioHandler;
         }
 
-        public AudioHandler PlaySoundClip(string soundClipName, bool loopSound = false, bool allowMultiple = true, float volume = 1f, float delay = 0f) {
-            var clip = _soundLibrary.soundsList.Find(x => x.soundName == soundClipName).sound;
+        public AudioHandler PlaySoundClip(int audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 1f, float delay = 0f) {
+            var clip = _audioLibrary.audioPairsList.Find(x => x.key == audioClipKey).audioClip;
 
-            if (!allowMultiple && IsSoundPlay(soundClipName)) return null;
+            if (!allowMultiple && IsSoundPlay(audioClipKey)) return null;
             
             var audioHandler = new GameObject("Sound-Audio-Handler", typeof(AudioHandler)).GetComponent<AudioHandler>();
             audioHandler.transform.SetParent(transform);
             audioHandler.Initialize(_soundsAudioMixerGroup);
             soundsAudioHandlers.Add(audioHandler);
-            audioHandler.Play(soundClipName, clip, loopSound, volume, delay);
+            audioHandler.Play(audioClipKey, clip, loopSound, volume, delay);
             
             return audioHandler;
         }
 
-        public void StopPlayingMusic(string soundClipName) {
+        public void StopPlayingMusic(int soundClipName) {
             if(!IsMusicPlay(soundClipName)) return;
             var currentMusicAudioSource = GetAudioSourceByClipName(musicAudioHandlers, soundClipName);
             if(currentMusicAudioSource == null) return;
             currentMusicAudioSource.Stop();
         }
 
-        public void StopPlayingSound(string soundClipName) {
-            if(!IsSoundPlay(soundClipName)) return;
-            var currentSoundAudioSource = GetAudioSourceByClipName(musicAudioHandlers, soundClipName);
+        public void StopPlayingSound(int audioClipKey) {
+            if(!IsSoundPlay(audioClipKey)) return;
+            var currentSoundAudioSource = GetAudioSourceByClipName(musicAudioHandlers, audioClipKey);
             if(currentSoundAudioSource == null) return;
             currentSoundAudioSource.Stop();
         }
@@ -139,8 +140,8 @@ namespace HephaestusMobile.Audio.Manager
             return audioSources.FirstOrDefault(t => t.IsPlaying);
         }
         
-        private AudioHandler GetAudioSourceByClipName(List<AudioHandler> audioSources, string clipName) {
-            return audioSources.FirstOrDefault(t => t.AudioClipName == clipName);
+        private AudioHandler GetAudioSourceByClipName(List<AudioHandler> audioSources, int audioClipKey) {
+            return audioSources.FirstOrDefault(t => t.AudioClipKey == audioClipKey);
         }
 
         IEnumerator CleanInactiveAudioSources() {
@@ -168,15 +169,15 @@ namespace HephaestusMobile.Audio.Manager
             }
         }
 
-        public bool IsMusicPlay(string soundClipName)
+        public bool IsMusicPlay(int audioClipKey)
         {
-            var audioHandler = musicAudioHandlers.Find(x => x.AudioClipName == soundClipName);
+            var audioHandler = musicAudioHandlers.Find(x => x.AudioClipKey == audioClipKey);
             return audioHandler != null;
         }
 
-        public bool IsSoundPlay(string soundClipName)
+        public bool IsSoundPlay(int audioClipKey)
         {
-            var audioHandler = soundsAudioHandlers.Find(x => x.AudioClipName == soundClipName);
+            var audioHandler = soundsAudioHandlers.Find(x => x.AudioClipKey == audioClipKey);
             return audioHandler != null;
         }
     }

@@ -15,7 +15,7 @@ namespace HephaestusMobile.Audio.Handler
 
         public bool IsPlaying => audioSource.isPlaying;
 
-        public string AudioClipName { get; private set; }
+        public int AudioClipKey { get; private set; }
 
         [SerializeField]
         private AudioSource audioSource;
@@ -29,9 +29,9 @@ namespace HephaestusMobile.Audio.Handler
             audioSource.volume = 1f;
         }
 
-        public void Play(string clipName, AudioClip clip, bool loop = false, float volume = 1f, float delay = 0f)
+        public void Play(int clipKey, AudioClip clip, bool loop = false, float volume = 1f, float delay = 0f)
         {
-            AudioClipName = clipName;
+            AudioClipKey = clipKey;
             audioSource.clip = clip;
             audioSource.loop = loop;
             audioSource.volume = volume;
@@ -50,7 +50,7 @@ namespace HephaestusMobile.Audio.Handler
 
         public void Stop()
         {
-            AudioClipName = string.Empty;
+            AudioClipKey = 0;
             audioSource.Stop();
             audioSource.clip = null;
             OnClipEnded?.Invoke();

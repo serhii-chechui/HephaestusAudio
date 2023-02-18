@@ -1,40 +1,41 @@
-﻿using HephaestusMobile.Audio.Handler;
+﻿using System;
+using HephaestusMobile.Audio.Handler;
 
 namespace HephaestusMobile.Audio.Manager {
     public interface IAudioManager {
         /// <summary>
         /// Play audio clip as music.
         /// </summary>
-        /// <param name="soundClipName">Related sounds key from the config.</param>
+        /// <param name="audioClipKey">Related sounds key from the config.</param>
         /// <param name="loopSound">Is sound should be play as loop.</param>
         /// <param name="allowMultiple">Allow to play multiple instances of the sound.</param>
         /// <param name="volume">Volume of the sound.</param>
         /// <param name="delay">Delay, before play the sound.</param>
         /// <returns></returns>
-        AudioHandler PlayMusicClip(string soundClipName, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
+        AudioHandler PlayMusicClip(Enum audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
         
         /// <summary>
         /// Play audio clip as sound.
         /// </summary>
-        /// <param name="soundClipName">Related sounds key from the config.</param>
+        /// <param name="audioClipKey">Related sounds key from the config.</param>
         /// <param name="loopSound">Is sound should be play as loop.</param>
         /// <param name="allowMultiple">Allow to play multiple instances of the sound.</param>
         /// <param name="volume">Volume of the sound.</param>
         /// <param name="delay">Delay, before play the sound.</param>
         /// <returns></returns>
-        AudioHandler PlaySoundClip(string soundClipName, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
+        AudioHandler PlaySoundClip(Enum audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
         
         /// <summary>
         /// Stops playing sound.
         /// </summary>
-        /// <param name="soundClipName">Related sounds key from the config.</param>
-        void StopPlayingMusic(string soundClipName);
+        /// <param name="audioClipKey">Related sounds key from the config.</param>
+        void StopPlayingMusic(Enum audioClipKey);
         
         /// <summary>
         /// Stops playing sound.
         /// </summary>
-        /// <param name="soundClipName">Related sounds key from the config.</param>
-        void StopPlayingSound(string soundClipName);
+        /// <param name="audioClipKey">Related sounds key from the config.</param>
+        void StopPlayingSound(Enum audioClipKey);
         
         /// <summary>
         /// Get the volume of the AudioMixer group related to the music clips.
@@ -63,15 +64,15 @@ namespace HephaestusMobile.Audio.Manager {
         /// <summary>
         /// Check if there is already exists AudioHandler related to the specific sound key.
         /// </summary>
-        /// <param name="soundClipName">Related sounds key from the config.</param>
+        /// <param name="audioClipKey">Related sounds key from the config.</param>
         /// <returns></returns>
-        bool IsMusicPlay(string soundClipName);
+        bool IsMusicPlay(Enum audioClipKey);
         
         /// <summary>
         /// Check if there is already exists AudioHandler related to the specific sound key.
         /// </summary>
-        /// <param name="soundClipName">Related sounds key from the config.</param>
+        /// <param name="audioClipKey">Related sounds key from the config.</param>
         /// <returns></returns>
-        bool IsSoundPlay(string soundClipName);
+        bool IsSoundPlay(Enum audioClipKey);
     }
 }

@@ -1,20 +1,23 @@
+using HephaestusMobile.Audio.SoundsLibrary;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace HephaestusMobile.Audio.SoundsLibrary.Editor {
-    [CustomEditor(typeof(SoundLibrary))]
-    public class SoundLibraryEditor : UnityEditor.Editor {
+namespace Hephaestus.Audio.Editor {
+    [CustomEditor(typeof(AudioLibrary))]
+    public class AudioLibraryEditor : UnityEditor.Editor {
         
         private ReorderableList _reorderableList;
 
-        private SoundLibrary SoundLibrary => target as SoundLibrary;
+        private AudioLibrary AudioLibrary => target as AudioLibrary;
+        
+        private string[] _keys;
 
         private void OnEnable() {
             
-            if(SoundLibrary == null) return;
+            if(AudioLibrary == null) return;
 
-            _reorderableList = new ReorderableList(SoundLibrary.soundsList, typeof(SoundNamePair), true, true, true, true);
+            _reorderableList = new ReorderableList(AudioLibrary.audioPairsList, typeof(AudioNamePair), true, true, true, true);
 
             // This could be used aswell, but I only advise this your class inherrits from UnityEngine.Object or has a CustomPropertyDrawer
             // Since you'll find your item using: serializedObject.FindProperty("list").GetArrayElementAtIndex(index).objectReferenceValue
@@ -58,12 +61,19 @@ namespace HephaestusMobile.Audio.SoundsLibrary.Editor {
         /// <param name="focused"></param>
         private void DrawElement(Rect rect, int index, bool active, bool focused) {
             
-            var item = SoundLibrary.soundsList[index];
+            var item = AudioLibrary.audioPairsList[index];
 
             EditorGUI.BeginChangeCheck();
 
-            item.soundName = EditorGUI.TextField(new Rect(rect.x, rect.y, rect.width * 0.5f, EditorGUIUtility.singleLineHeight), item.soundName);
-            item.sound = (AudioClip) EditorGUI.ObjectField(new Rect(rect.x + rect.width * 0.5f + 8f, rect.y, rect.width * 0.5f - 8f, EditorGUIUtility.singleLineHeight), item.sound, typeof(AudioClip), false);
+            // item.key = EditorGUI.TextField(new Rect(rect.x, rect.y, rect.width * 0.5f, EditorGUIUtility.singleLineHeight), item.key);
+            
+            item.key = EditorGUI.Popup(
+                new Rect(rect.x, rect.y, rect.width * 0.5f, EditorGUIUtility.singleLineHeight),
+                item.key,
+                _keys
+            );
+            
+            item.audioClip = (AudioClip) EditorGUI.ObjectField(new Rect(rect.x + rect.width * 0.5f + 8f, rect.y, rect.width * 0.5f - 8f, EditorGUIUtility.singleLineHeight), item.audioClip, typeof(AudioClip), false);
 
             if (EditorGUI.EndChangeCheck()) {
                 EditorUtility.SetDirty(target);
@@ -75,17 +85,22 @@ namespace HephaestusMobile.Audio.SoundsLibrary.Editor {
         }
 
         private void AddItem(ReorderableList list) {
-            SoundLibrary.soundsList.Add(new SoundNamePair {soundName = "NEW_SOUND", sound = null});
-            EditorUtility.SetDirty(target);
+            ReorderableList.defaultBehaviours.DoAddButton(list);
         }
 
         private void RemoveItem(ReorderableList list) {
-            SoundLibrary.soundsList.RemoveAt(list.index);
+            AudioLibrary.audioPairsList.RemoveAt(list.index);
 
             EditorUtility.SetDirty(target);
         }
 
-        public override void OnInspectorGUI() {
+        public override void OnInspectorGUI()
+        {
+
+            var audioLibrary = (AudioLibrary)target;
+            
+            _keys = audioLibrary.audioLibraryConstants.soundMapKeys.ToArray();
+            ConvertIntValuesFromKeys(_keys);
             
             base.OnInspectorGUI();
             
@@ -99,6 +114,16 @@ namespace HephaestusMobile.Audio.SoundsLibrary.Editor {
             if (GUILayout.Button("Save Library", GUILayout.ExpandWidth(true), GUILayout.Height(32f))) {
                 EditorUtility.SetDirty(target);
                 AssetDatabase.SaveAssets();
+            }
+        }
+        
+        private void ConvertIntValuesFromKeys(string[] input)
+        {
+            var options = new int[input.Length];
+
+            for (int i = 0; i < options.Length; i++)
+            {
+                options[i] = i;
             }
         }
     }
