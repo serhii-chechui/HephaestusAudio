@@ -15,7 +15,7 @@ namespace Hephaestus.Audio.Editor
         
         private string _enumClassName = "AudioLibraryConstants";
 
-        private string _newConstantKey;
+        private string _newConstantKey = string.Empty;
         
         public override void OnInspectorGUI()
         {
@@ -56,7 +56,7 @@ namespace Hephaestus.Audio.Editor
             
             EditorGUILayout.LabelField($"Add New {EntityType} Keys:", EditorStyles.largeLabel);
             
-            _newConstantKey = EditorGUILayout.TextField("New Key:", _newConstantKey).ToUpper();
+            _newConstantKey = EditorGUILayout.TextField("New Key:", _newConstantKey).Replace(' ', '_').ToUpper();
 
             if (GUILayout.Button($"Add New {EntityType} Key", GUILayout.ExpandWidth(true), GUILayout.Height(32)))
             {

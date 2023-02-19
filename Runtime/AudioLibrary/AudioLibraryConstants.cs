@@ -10,6 +10,6 @@ namespace Hephaestus.Audio.SoundsLibrary
         public string enumsPath;
         
         [HideInInspector]
-        public List<string> soundMapKeys;
+        public List<string> soundMapKeys = new List<string>();
     }
 }
