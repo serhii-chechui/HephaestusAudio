@@ -3,6 +3,7 @@
 ## [2.0.3] - 2023-08-31
 ### Changed
 + Updated the dependency;
++ Updated the publish section;
 
 ## [2.0.0] - 2022-02-18
 ### Added
