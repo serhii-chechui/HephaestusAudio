@@ -1,6 +1,6 @@
 {
   "name": "com.wtfgames.hephaestus.audio",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "displayName": "Hephaestus Audio",
   "description": "Hephaestus Audio is a part of the Hephaestus Core framework that helps operate with audio.",
   "unity": "2019.2",
@@ -16,7 +16,7 @@
     "url": "https://github.com/serhii-chechui"
   },
   "dependencies": {
-    "com.svermeulen.extenject": "9.2.0"
+    "com.svermeulen.extenject": "9.2.0-stcf3"
   },
   "samples": [
     {
