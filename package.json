@@ -16,7 +16,7 @@
     "url": "https://github.com/serhii-chechui"
   },
   "dependencies": {
-    "com.svermeulen.extenject": "9.2.0"
+    "com.svermeulen.extenject": "9.2.0-stcf3"
   },
   "samples": [
     {

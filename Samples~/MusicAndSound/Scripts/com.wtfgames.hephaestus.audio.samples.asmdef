@@ -1,0 +1,17 @@
+{
+    "name": "com.hephaestus.audiomanager.samples",
+    "rootNamespace": "Hephaestus.Audio.Samples",
+    "references": [
+        "Zenject",
+        "com.wtfgames.hephaestus.audio"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
