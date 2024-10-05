@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 
 namespace HephaestusMobile.Audio.Handler
 {
-    public class AudioHandler : MonoBehaviour
+    public class AudioSourceHandler : MonoBehaviour
     {
         public event Action OnClipPlay;
         public event Action OnClipEnded;
