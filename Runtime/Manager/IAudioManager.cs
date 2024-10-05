@@ -12,7 +12,7 @@ namespace HephaestusMobile.Audio.Manager {
         /// <param name="volume">Volume of the sound.</param>
         /// <param name="delay">Delay, before play the sound.</param>
         /// <returns></returns>
-        AudioHandler PlayMusicClip(Enum audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
+        AudioSourceHandler PlayMusicClip(Enum audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
         
         /// <summary>
         /// Play audio clip as sound.
@@ -23,7 +23,7 @@ namespace HephaestusMobile.Audio.Manager {
         /// <param name="volume">Volume of the sound.</param>
         /// <param name="delay">Delay, before play the sound.</param>
         /// <returns></returns>
-        AudioHandler PlaySoundClip(Enum audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
+        AudioSourceHandler PlaySoundClip(Enum audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
         
         /// <summary>
         /// Stops playing sound.

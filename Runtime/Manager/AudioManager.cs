@@ -28,13 +28,13 @@ namespace HephaestusMobile.Audio.Manager {
         }
 
         /// <inheritdoc cref="IAudioManager"/>
-        public AudioHandler PlayMusicClip(Enum audioClipKey, bool loopSound = true, bool allowMultiple = true, float volume = 0.5f, float delay = 0)
+        public AudioSourceHandler PlayMusicClip(Enum audioClipKey, bool loopSound = true, bool allowMultiple = true, float volume = 0.5f, float delay = 0)
         {
             return _audioManagerHandler.PlayMusicClip(Convert.ToInt32(audioClipKey), loopSound, allowMultiple, volume, delay);
         }
 
         /// <inheritdoc cref="IAudioManager"/>
-        public AudioHandler PlaySoundClip(Enum soundClipName, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0)
+        public AudioSourceHandler PlaySoundClip(Enum soundClipName, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0)
         {
             return _audioManagerHandler.PlaySoundClip(Convert.ToInt32(soundClipName), loopSound, allowMultiple, volume, delay);
         }
