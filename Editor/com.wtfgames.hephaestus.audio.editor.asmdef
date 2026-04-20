@@ -1,6 +1,6 @@
 {
     "name": "com.wtfgames.hephaestus.audio.editor",
-    "rootNamespace": "Hephaestus.Audio.Editor",
+    "rootNamespace": "WTFGames.Hephaestus.Audio.Editor",
     "references": [
         "com.wtfgames.hephaestus.audio",
         "UnityEditor.UI"

@@ -1,6 +1,6 @@
 {
     "name": "com.wtfgames.hephaestus.audio",
-    "rootNamespace": "Hephaestus.Audio",
+    "rootNamespace": "WTFGames.Hephaestus.AudioSystem",
     "references": [
         "Zenject"
     ],
