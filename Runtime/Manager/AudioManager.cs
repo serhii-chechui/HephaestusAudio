@@ -1,9 +1,8 @@
 ﻿using System;
-using HephaestusMobile.Audio.Handler;
 using UnityEngine;
 using Zenject;
 
-namespace HephaestusMobile.Audio.Manager {
+namespace WTFGames.Hephaestus.AudioSystem {
     public class AudioManager : IInitializable, IDisposable, IAudioManager
     {
         [Inject]
@@ -28,9 +27,9 @@ namespace HephaestusMobile.Audio.Manager {
         }
 
         /// <inheritdoc cref="IAudioManager"/>
-        public AudioSourceHandler PlayMusicClip(Enum audioClipKey, bool loopSound = true, bool allowMultiple = true, float volume = 0.5f, float delay = 0)
+        public AudioSourceHandler PlayMusicClip(Enum audioClipKey, bool loopSound = true, float volume = 0.5f, float delay = 0)
         {
-            return _audioManagerHandler.PlayMusicClip(Convert.ToInt32(audioClipKey), loopSound, allowMultiple, volume, delay);
+            return _audioManagerHandler.PlayMusicClip(Convert.ToInt32(audioClipKey), loopSound, volume, delay);
         }
 
         /// <inheritdoc cref="IAudioManager"/>
@@ -78,13 +77,13 @@ namespace HephaestusMobile.Audio.Manager {
         /// <inheritdoc cref="IAudioManager"/>
         public bool IsMusicPlay(Enum soundClipName)
         {
-            return _audioManagerHandler.IsMusicPlay(Convert.ToInt32(soundClipName));
+            return _audioManagerHandler.HasMusicAudioHandler(Convert.ToInt32(soundClipName));
         }
 
         /// <inheritdoc cref="IAudioManager"/>
         public bool IsSoundPlay(Enum soundClipName)
         {
-            return _audioManagerHandler.IsSoundPlay(Convert.ToInt32(soundClipName));
+            return _audioManagerHandler.HasSoundAudioHandler(Convert.ToInt32(soundClipName));
         }
     }
 }

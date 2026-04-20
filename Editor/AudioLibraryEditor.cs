@@ -1,9 +1,8 @@
-using HephaestusMobile.Audio.SoundsLibrary;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Hephaestus.Audio.Editor {
+namespace WTFGames.Hephaestus.AudioSystem.Editor {
     [CustomEditor(typeof(AudioLibrary))]
     public class AudioLibraryEditor : UnityEditor.Editor {
         

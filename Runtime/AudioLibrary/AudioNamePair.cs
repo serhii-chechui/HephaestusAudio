@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace HephaestusMobile.Audio.SoundsLibrary
+namespace WTFGames.Hephaestus.AudioSystem
 {
     [Serializable]
     public class AudioNamePair

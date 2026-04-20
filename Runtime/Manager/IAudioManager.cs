@@ -1,7 +1,6 @@
 ﻿using System;
-using HephaestusMobile.Audio.Handler;
 
-namespace HephaestusMobile.Audio.Manager {
+namespace WTFGames.Hephaestus.AudioSystem {
     public interface IAudioManager {
         /// <summary>
         /// Play audio clip as music.
@@ -12,7 +11,7 @@ namespace HephaestusMobile.Audio.Manager {
         /// <param name="volume">Volume of the sound.</param>
         /// <param name="delay">Delay, before play the sound.</param>
         /// <returns></returns>
-        AudioSourceHandler PlayMusicClip(Enum audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 0.5f, float delay = 0f);
+        AudioSourceHandler PlayMusicClip(Enum audioClipKey, bool loopSound = false, float volume = 0.5f, float delay = 0f);
         
         /// <summary>
         /// Play audio clip as sound.

@@ -1,7 +1,6 @@
-using HephaestusMobile.Audio.Manager;
 using Zenject;
 
-namespace HephaestusMobile.Audio.Installers
+namespace WTFGames.Hephaestus.AudioSystem
 {
     public class HephaestusAudioInstaller : Installer<HephaestusAudioInstaller>
     {

@@ -3,13 +3,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace HephaestusMobile.Audio.Handler
+namespace WTFGames.Hephaestus.AudioSystem
 {
     public class AudioSourceHandler : MonoBehaviour
     {
-        public event Action OnClipPlay;
-        public event Action OnClipEnded;
-        public event Action OnClipStop;
+        public event Action<int> OnClipPlay;
+        public event Action<int> OnClipEnded;
+        public event Action<int> OnClipStop;
 
         private Coroutine _playingAudionCoroutine;
 
@@ -28,6 +28,15 @@ namespace HephaestusMobile.Audio.Handler
             audioSource.playOnAwake = false;
             audioSource.volume = 1f;
         }
+        
+        public void Dismiss()
+        {
+            audioSource.Stop();
+            audioSource.clip = null;
+            if (_playingAudionCoroutine == null) return;
+            StopCoroutine(WaitUntilClipEnd_Co());
+            _playingAudionCoroutine = null;
+        }
 
         public void Play(int clipKey, AudioClip clip, bool loop = false, float volume = 1f, float delay = 0f)
         {
@@ -35,8 +44,8 @@ namespace HephaestusMobile.Audio.Handler
             audioSource.clip = clip;
             audioSource.loop = loop;
             audioSource.volume = volume;
-            audioSource.Play((ulong) delay);
-            OnClipPlay?.Invoke();
+            audioSource.Play((ulong)delay);
+            OnClipPlay?.Invoke(AudioClipKey);
             if (_playingAudionCoroutine != null)
             {
                 StopCoroutine(WaitUntilClipEnd_Co());
@@ -53,27 +62,21 @@ namespace HephaestusMobile.Audio.Handler
             AudioClipKey = 0;
             audioSource.Stop();
             audioSource.clip = null;
-            OnClipEnded?.Invoke();
-            OnClipStop?.Invoke();
+            OnClipEnded?.Invoke(AudioClipKey);
+            OnClipStop?.Invoke(AudioClipKey);
             if (_playingAudionCoroutine == null) return;
             StopCoroutine(WaitUntilClipEnd_Co());
             _playingAudionCoroutine = null;
         }
 
-        public void Dismiss()
+        private IEnumerator WaitUntilClipEnd_Co()
         {
-            audioSource.Stop();
-            audioSource.clip = null;
-            if (_playingAudionCoroutine == null) return;
-            StopCoroutine(WaitUntilClipEnd_Co());
-            _playingAudionCoroutine = null;
-        }
-
-        IEnumerator WaitUntilClipEnd_Co()
-        {
-            yield return new WaitUntil(() => !audioSource.isPlaying);
-            OnClipEnded?.Invoke();
-            _playingAudionCoroutine = null;
+            while (audioSource.isPlaying)
+            {
+                yield return null;
+            }
+            
+            OnClipEnded?.Invoke(AudioClipKey);
         }
     }
 }

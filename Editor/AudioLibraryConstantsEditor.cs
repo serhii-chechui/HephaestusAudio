@@ -1,10 +1,9 @@
 using System.IO;
 using System.Text;
-using Hephaestus.Audio.SoundsLibrary;
 using UnityEditor;
 using UnityEngine;
 
-namespace Hephaestus.Audio.Editor
+namespace WTFGames.Hephaestus.AudioSystem.Editor
 {
     [CustomEditor(typeof(AudioLibraryConstants))]
     public class AudioLibraryConstantsEditor : UnityEditor.Editor
