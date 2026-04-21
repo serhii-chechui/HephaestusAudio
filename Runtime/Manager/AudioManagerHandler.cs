@@ -77,6 +77,8 @@ namespace WTFGames.Hephaestus.AudioSystem
 
         public AudioSourceHandler PlayMusicClip(int audioClipKey, bool loopSound = true, float volume = 0.5f, float delay = 0f)
         {
+            CleanupInactiveHandlers(musicAudioHandlers);
+            
             return PlayClipInternal(
                 audioClipKey: audioClipKey,
                 targetHandlers: musicAudioHandlers,
@@ -91,6 +93,8 @@ namespace WTFGames.Hephaestus.AudioSystem
 
         public AudioSourceHandler PlaySoundClip(int audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 1f, float delay = 0f)
         {
+            CleanupInactiveHandlers(soundsAudioHandlers);
+            
             return PlayClipInternal(
                 audioClipKey: audioClipKey,
                 targetHandlers: soundsAudioHandlers,
@@ -145,6 +149,30 @@ namespace WTFGames.Hephaestus.AudioSystem
             audioHandler.transform.SetParent(parent);
             audioHandler.Initialize(mixerGroup);
             return audioHandler;
+        }
+
+        private void CleanupInactiveHandlers(List<AudioSourceHandler> handlers)
+        {
+            for (var i = handlers.Count - 1; i >= 0; i--)
+            {
+                var handler = handlers[i];
+
+                if (handler == null)
+                {
+                    handlers.RemoveAt(i);
+                    continue;
+                }
+
+                if (handler.IsPlaying) continue;
+                handlers.RemoveAt(i);
+                Destroy(handler.gameObject);
+            }
+        }
+        
+        private void CleanupAllInactiveHandlers()
+        {
+            CleanupInactiveHandlers(musicAudioHandlers);
+            CleanupInactiveHandlers(soundsAudioHandlers);
         }
         
         public void StopPlayingMusic(int audioClipKey)
@@ -202,13 +230,6 @@ namespace WTFGames.Hephaestus.AudioSystem
             return soundsAudioHandlers.Any(x => x.AudioClipKey == audioClipKey);
         }
 
-        private void DisposeMusicAudioSourceHandler(int audioClipKey)
-        {
-            var audioSourceHandler = musicAudioHandlers.Find(x => x.AudioClipKey.Equals(audioClipKey));
-            musicAudioHandlers.Remove(audioSourceHandler);
-            Destroy(audioSourceHandler.gameObject);
-        }
-        
         private AudioSourceHandler GetAudioSourceByClipKey(List<AudioSourceHandler> audioSources, int audioClipKey)
         {
             return audioSources.FirstOrDefault(t => t.AudioClipKey == audioClipKey);
