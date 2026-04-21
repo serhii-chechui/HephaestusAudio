@@ -19,9 +19,11 @@ namespace WTFGames.Hephaestus.AudioSystem
         private AudioMixerGroup _soundsAudioMixerGroup;
 
         [Header("Audio Sources:")]
+        private Transform _musicAudioHandler;
         [SerializeField]
         private List<AudioSourceHandler> musicAudioHandlers;
-
+        
+        private Transform _soundAudioHandler;
         [SerializeField]
         private List<AudioSourceHandler> soundsAudioHandlers;
 
@@ -29,21 +31,21 @@ namespace WTFGames.Hephaestus.AudioSystem
         {
             _audioManagerConfig = audioManagerConfig;
 
-            if (musicAudioHandlers == null)
+            if (_musicAudioHandler == null)
             {
-                var musicAudioHandler = new GameObject("Music-Audio-Handler", typeof(AudioSourceHandler))
-                    .GetComponent<AudioSourceHandler>();
-                musicAudioHandler.transform.SetParent(transform);
-                musicAudioHandlers = new List<AudioSourceHandler> { musicAudioHandler };
+                _musicAudioHandler = new GameObject("Music-Audio-Handler").transform;
+                _musicAudioHandler.transform.SetParent(transform);
             }
 
-            if (soundsAudioHandlers == null)
+            musicAudioHandlers ??= new List<AudioSourceHandler>();
+            
+            if (_soundAudioHandler == null)
             {
-                var soundAudioHandler = new GameObject("Sounds-Audio-Handler", typeof(AudioSourceHandler))
-                    .GetComponent<AudioSourceHandler>();
-                soundAudioHandler.transform.SetParent(transform);
-                soundsAudioHandlers = new List<AudioSourceHandler> { soundAudioHandler };
+                _soundAudioHandler = new GameObject("Sounds-Audio-Handler").transform;
+                _soundAudioHandler.transform.SetParent(transform);
             }
+            
+            soundsAudioHandlers ??= new List<AudioSourceHandler>();
 
             if (_audioLibrary == null)
             {
@@ -55,20 +57,14 @@ namespace WTFGames.Hephaestus.AudioSystem
                 _audioMixer = audioManagerConfig.audioMixer;
             }
 
-            if (_audioMixer != null)
+            if (TryGetMixerGroup("Music", out var musicGroup))
             {
-                _musicAudioMixerGroup = _audioMixer.FindMatchingGroups("Music")[0];
-                _soundsAudioMixerGroup = _audioMixer.FindMatchingGroups("Sounds")[0];
+                _musicAudioMixerGroup = musicGroup;
+            }
 
-                foreach (var musicAudioSource in musicAudioHandlers)
-                {
-                    musicAudioSource.Initialize(_musicAudioMixerGroup);
-                }
-
-                foreach (var soundAudioSource in soundsAudioHandlers)
-                {
-                    soundAudioSource.Initialize(_soundsAudioMixerGroup);
-                }
+            if (TryGetMixerGroup("Sounds", out var soundsGroup))
+            {
+                _soundsAudioMixerGroup = soundsGroup;
             }
 
             DontDestroyOnLoad(gameObject);
@@ -79,57 +75,88 @@ namespace WTFGames.Hephaestus.AudioSystem
             
         }
 
-        public AudioSourceHandler PlayMusicClip(int audioClipKey, bool loopSound = true, float volume = 0.5F, float delay = 0f)
+        public AudioSourceHandler PlayMusicClip(int audioClipKey, bool loopSound = true, float volume = 0.5f, float delay = 0f)
         {
-            AudioSourceHandler audioHandler = null;
-            
-            var clip = _audioLibrary.GetAudioClipByKey(audioClipKey);
-
-            audioHandler = musicAudioHandlers.Find(x => x.AudioClipKey == audioClipKey);
-
-            if (audioHandler != null)
-            {
-                audioHandler.Play(audioClipKey, clip, loopSound, volume, delay);
-                return audioHandler;
-            }
-
-            audioHandler = new GameObject("Music-Audio-Handler", typeof(AudioSourceHandler)).GetComponent<AudioSourceHandler>();
-            audioHandler.transform.SetParent(transform);
-            audioHandler.Initialize(_musicAudioMixerGroup);
-            musicAudioHandlers.Add(audioHandler);
-
-            audioHandler.Play(audioClipKey, clip, loopSound, volume, delay);
-
-            return audioHandler;
+            return PlayClipInternal(
+                audioClipKey: audioClipKey,
+                targetHandlers: musicAudioHandlers,
+                mixerGroup: _musicAudioMixerGroup,
+                _musicAudioHandler,
+                loopSound: loopSound,
+                allowMultiple: false,
+                volume: volume,
+                delay: delay
+            );
         }
 
         public AudioSourceHandler PlaySoundClip(int audioClipKey, bool loopSound = false, bool allowMultiple = true, float volume = 1f, float delay = 0f)
         {
-            var clip = _audioLibrary.audioPairsList.Find(x => x.key == audioClipKey).audioClip;
+            return PlayClipInternal(
+                audioClipKey: audioClipKey,
+                targetHandlers: soundsAudioHandlers,
+                mixerGroup: _soundsAudioMixerGroup,
+                _soundAudioHandler,
+                loopSound: loopSound,
+                allowMultiple: allowMultiple,
+                volume: volume,
+                delay: delay
+            );
+        }
+        
+        private AudioSourceHandler PlayClipInternal(
+            int audioClipKey,
+            List<AudioSourceHandler> targetHandlers,
+            AudioMixerGroup mixerGroup,
+            Transform parent,
+            bool loopSound,
+            bool allowMultiple,
+            float volume,
+            float delay
+        )
+        {
+            if (!TryGetClip(audioClipKey, out var clip)) return null;
 
-            if (!allowMultiple && HasSoundAudioHandler(audioClipKey)) return null;
+            if (mixerGroup == null)
+            {
+                Debug.LogError($"[AudioManager] Mixer group is null for clip key {audioClipKey}.");
+                return null;
+            }
 
-            var audioHandler = new GameObject("Sound-Audio-Handler", typeof(AudioSourceHandler)).GetComponent<AudioSourceHandler>();
-            audioHandler.transform.SetParent(transform);
-            audioHandler.Initialize(_soundsAudioMixerGroup);
-            soundsAudioHandlers.Add(audioHandler);
+            AudioSourceHandler audioHandler = null;
+
+            if (!allowMultiple)
+            {
+                audioHandler = targetHandlers.FirstOrDefault(x => x.AudioClipKey == audioClipKey);
+            }
+
+            if (audioHandler == null)
+            {
+                audioHandler = CreateAudioHandler(clip.name, parent, mixerGroup);
+                targetHandlers.Add(audioHandler);
+            }
+            
             audioHandler.Play(audioClipKey, clip, loopSound, volume, delay);
-
             return audioHandler;
         }
 
+        private AudioSourceHandler CreateAudioHandler(string objectName, Transform parent, AudioMixerGroup mixerGroup)
+        {
+            var audioHandler = new GameObject(objectName, typeof(AudioSourceHandler)).GetComponent<AudioSourceHandler>();
+            audioHandler.transform.SetParent(parent);
+            audioHandler.Initialize(mixerGroup);
+            return audioHandler;
+        }
+        
         public void StopPlayingMusic(int audioClipKey)
         {
-            if (!HasMusicAudioHandler(audioClipKey)) return;
-            var currentMusicAudioSource = GetAudioSourceByClipName(musicAudioHandlers, audioClipKey);
+            var currentMusicAudioSource = GetAudioSourceByClipKey(musicAudioHandlers, audioClipKey);
             if (currentMusicAudioSource == null) return;
             currentMusicAudioSource.Stop();
         }
 
         public void StopPlayingSound(int audioClipKey)
         {
-            if (!HasSoundAudioHandler(audioClipKey)) return;
-            var currentSoundAudioSource = GetAudioSourceByClipName(musicAudioHandlers, audioClipKey);
+            var currentSoundAudioSource = GetAudioSourceByClipKey(soundsAudioHandlers, audioClipKey);
             if (currentSoundAudioSource == null) return;
             currentSoundAudioSource.Stop();
         }
@@ -162,18 +189,7 @@ namespace WTFGames.Hephaestus.AudioSystem
         
         private float GetAudioMixerGroupVolume(string groupName)
         {
-            float dB;
-            return _audioMixer.GetFloat(groupName, out dB) ? Mathf.Pow(10, dB / 20) : 1f;
-        }
-
-        private AudioSourceHandler GetCurrentAudioSource(List<AudioSourceHandler> audioSources)
-        {
-            return audioSources.FirstOrDefault(t => t.IsPlaying);
-        }
-
-        private AudioSourceHandler GetAudioSourceByClipName(List<AudioSourceHandler> audioSources, int audioClipKey)
-        {
-            return audioSources.FirstOrDefault(t => t.AudioClipKey == audioClipKey);
+            return _audioMixer.GetFloat(groupName, out var dB) ? Mathf.Pow(10, dB / 20) : 1f;
         }
 
         public bool HasMusicAudioHandler(int audioClipKey)
@@ -191,6 +207,40 @@ namespace WTFGames.Hephaestus.AudioSystem
             var audioSourceHandler = musicAudioHandlers.Find(x => x.AudioClipKey.Equals(audioClipKey));
             musicAudioHandlers.Remove(audioSourceHandler);
             Destroy(audioSourceHandler.gameObject);
+        }
+        
+        private AudioSourceHandler GetAudioSourceByClipKey(List<AudioSourceHandler> audioSources, int audioClipKey)
+        {
+            return audioSources.FirstOrDefault(t => t.AudioClipKey == audioClipKey);
+        }
+        
+        private bool TryGetClip(int key, out AudioClip clip)
+        {
+            clip = _audioLibrary?.audioPairsList?.FirstOrDefault(x => x.key == key)?.audioClip;
+            if (clip != null) return true;
+
+            Debug.LogError($"Audio clip with key {key} was not found.");
+            return false;
+        }
+        
+        private bool TryGetMixerGroup(string groupName, out AudioMixerGroup mixerGroup)
+        {
+            mixerGroup = null;
+
+            if (_audioMixer == null)
+            {
+                Debug.LogError("[AudioManager] AudioMixer is not assigned.");
+                return false;
+            }
+
+            var groups = _audioMixer.FindMatchingGroups(groupName);
+            mixerGroup = groups.FirstOrDefault();
+
+            if (mixerGroup != null)
+                return true;
+
+            Debug.LogError($"[AudioManager] Mixer group '{groupName}' was not found in mixer '{_audioMixer.name}'.");
+            return false;
         }
     }
 }
