@@ -24,6 +24,7 @@ namespace WTFGames.Hephaestus.AudioSystem {
         {
             if(_audioManagerHandler == null) return;
             _audioManagerHandler.Dispose();
+            _audioManagerHandler = null;
         }
 
         /// <inheritdoc cref="IAudioManager"/>

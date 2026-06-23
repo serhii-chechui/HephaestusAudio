@@ -72,7 +72,25 @@ namespace WTFGames.Hephaestus.AudioSystem
 
         public void Dispose()
         {
-            
+            StopAllHandlers(musicAudioHandlers);
+            StopAllHandlers(soundsAudioHandlers);
+
+            if (this != null && gameObject != null)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private static void StopAllHandlers(List<AudioSourceHandler> handlers)
+        {
+            if (handlers == null) return;
+
+            foreach (var handler in handlers)
+            {
+                if (handler != null) handler.Dismiss();
+            }
+
+            handlers.Clear();
         }
 
         public AudioSourceHandler PlayMusicClip(int audioClipKey, bool loopSound = true, float volume = 0.5f, float delay = 0f)

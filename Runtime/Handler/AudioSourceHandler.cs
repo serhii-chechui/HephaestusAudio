@@ -11,7 +11,7 @@ namespace WTFGames.Hephaestus.AudioSystem
         public event Action<int> OnClipEnded;
         public event Action<int> OnClipStop;
 
-        private Coroutine _playingAudionCoroutine;
+        private Coroutine _playingAudioCoroutine;
 
         public bool IsPlaying => audioSource.isPlaying;
 
@@ -33,9 +33,7 @@ namespace WTFGames.Hephaestus.AudioSystem
         {
             audioSource.Stop();
             audioSource.clip = null;
-            if (_playingAudionCoroutine == null) return;
-            StopCoroutine(WaitUntilClipEnd_Co());
-            _playingAudionCoroutine = null;
+            StopPlayingCoroutine();
         }
 
         public void Play(int clipKey, AudioClip clip, bool loop = false, float volume = 1f, float delay = 0f)
@@ -44,29 +42,36 @@ namespace WTFGames.Hephaestus.AudioSystem
             audioSource.clip = clip;
             audioSource.loop = loop;
             audioSource.volume = volume;
-            audioSource.Play((ulong)delay);
-            OnClipPlay?.Invoke(AudioClipKey);
-            if (_playingAudionCoroutine != null)
-            {
-                StopCoroutine(WaitUntilClipEnd_Co());
-                _playingAudionCoroutine = null;
-            }
+
+            if (delay > 0f)
+                audioSource.PlayDelayed(delay);
             else
-            {
-                _playingAudionCoroutine = StartCoroutine(WaitUntilClipEnd_Co());
-            }
+                audioSource.Play();
+
+            OnClipPlay?.Invoke(AudioClipKey);
+
+            StopPlayingCoroutine();
+            _playingAudioCoroutine = StartCoroutine(WaitUntilClipEnd_Co());
         }
 
         public void Stop()
         {
-            AudioClipKey = 0;
             audioSource.Stop();
             audioSource.clip = null;
+
             OnClipEnded?.Invoke(AudioClipKey);
             OnClipStop?.Invoke(AudioClipKey);
-            if (_playingAudionCoroutine == null) return;
-            StopCoroutine(WaitUntilClipEnd_Co());
-            _playingAudionCoroutine = null;
+
+            AudioClipKey = 0;
+
+            StopPlayingCoroutine();
+        }
+
+        private void StopPlayingCoroutine()
+        {
+            if (_playingAudioCoroutine == null) return;
+            StopCoroutine(_playingAudioCoroutine);
+            _playingAudioCoroutine = null;
         }
 
         private IEnumerator WaitUntilClipEnd_Co()
@@ -75,8 +80,9 @@ namespace WTFGames.Hephaestus.AudioSystem
             {
                 yield return null;
             }
-            
+
             OnClipEnded?.Invoke(AudioClipKey);
+            _playingAudioCoroutine = null;
         }
     }
 }
