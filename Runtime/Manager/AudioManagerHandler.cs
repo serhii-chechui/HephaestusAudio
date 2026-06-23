@@ -105,7 +105,8 @@ namespace WTFGames.Hephaestus.AudioSystem
                 loopSound: loopSound,
                 allowMultiple: false,
                 volume: volume,
-                delay: delay
+                delay: delay,
+                exclusive: true
             );
         }
 
@@ -121,10 +122,11 @@ namespace WTFGames.Hephaestus.AudioSystem
                 loopSound: loopSound,
                 allowMultiple: allowMultiple,
                 volume: volume,
-                delay: delay
+                delay: delay,
+                exclusive: false
             );
         }
-        
+
         private AudioSourceHandler PlayClipInternal(
             int audioClipKey,
             List<AudioSourceHandler> targetHandlers,
@@ -133,7 +135,8 @@ namespace WTFGames.Hephaestus.AudioSystem
             bool loopSound,
             bool allowMultiple,
             float volume,
-            float delay
+            float delay,
+            bool exclusive
         )
         {
             if (!TryGetClip(audioClipKey, out var clip)) return null;
@@ -142,6 +145,11 @@ namespace WTFGames.Hephaestus.AudioSystem
             {
                 Debug.LogError($"[AudioManager] Mixer group is null for clip key {audioClipKey}.");
                 return null;
+            }
+
+            if (exclusive)
+            {
+                StopOtherHandlers(targetHandlers, audioClipKey);
             }
 
             AudioSourceHandler audioHandler = null;
@@ -167,6 +175,26 @@ namespace WTFGames.Hephaestus.AudioSystem
             audioHandler.transform.SetParent(parent);
             audioHandler.Initialize(mixerGroup);
             return audioHandler;
+        }
+
+        private void StopOtherHandlers(List<AudioSourceHandler> handlers, int keepKey)
+        {
+            for (var i = handlers.Count - 1; i >= 0; i--)
+            {
+                var handler = handlers[i];
+
+                if (handler == null)
+                {
+                    handlers.RemoveAt(i);
+                    continue;
+                }
+
+                if (handler.AudioClipKey == keepKey) continue;
+
+                handler.Stop();
+                handlers.RemoveAt(i);
+                Destroy(handler.gameObject);
+            }
         }
 
         private void CleanupInactiveHandlers(List<AudioSourceHandler> handlers)
@@ -240,12 +268,12 @@ namespace WTFGames.Hephaestus.AudioSystem
 
         public bool HasMusicAudioHandler(int audioClipKey)
         {
-            return musicAudioHandlers.Any(x => x.AudioClipKey == audioClipKey);
+            return musicAudioHandlers.Any(x => x != null && x.AudioClipKey == audioClipKey && x.IsPlaying);
         }
 
         public bool HasSoundAudioHandler(int audioClipKey)
         {
-            return soundsAudioHandlers.Any(x => x.AudioClipKey == audioClipKey);
+            return soundsAudioHandlers.Any(x => x != null && x.AudioClipKey == audioClipKey && x.IsPlaying);
         }
 
         private AudioSourceHandler GetAudioSourceByClipKey(List<AudioSourceHandler> audioSources, int audioClipKey)
