@@ -60,12 +60,12 @@ namespace WTFGames.Hephaestus.AudioSystem
                 _audioMixer = audioManagerConfig.audioMixer;
             }
 
-            if (TryGetMixerGroup("Music", out var musicGroup))
+            if (TryGetMixerGroup(audioManagerConfig.musicMixerGroupName, out var musicGroup))
             {
                 _musicAudioMixerGroup = musicGroup;
             }
 
-            if (TryGetMixerGroup("Sounds", out var soundsGroup))
+            if (TryGetMixerGroup(audioManagerConfig.soundsMixerGroupName, out var soundsGroup))
             {
                 _soundsAudioMixerGroup = soundsGroup;
             }
@@ -263,22 +263,22 @@ namespace WTFGames.Hephaestus.AudioSystem
 
         public float GetMusicVolume()
         {
-            return GetAudioMixerGroupVolume("MusicVolume");
+            return GetAudioMixerGroupVolume(_audioManagerConfig.musicVolumeParameter);
         }
 
         public float GetSoundsVolume()
         {
-            return GetAudioMixerGroupVolume("SoundsVolume");
+            return GetAudioMixerGroupVolume(_audioManagerConfig.soundsVolumeParameter);
         }
 
         public void SetMusicVolume(float volume)
         {
-            SetAudioMixerGroupVolume("MusicVolume", volume);
+            SetAudioMixerGroupVolume(_audioManagerConfig.musicVolumeParameter, volume);
         }
 
         public void SetSoundsVolume(float volume)
         {
-            SetAudioMixerGroupVolume("SoundsVolume", volume);
+            SetAudioMixerGroupVolume(_audioManagerConfig.soundsVolumeParameter, volume);
         }
 
         private void SetAudioMixerGroupVolume(string groupName, float volume)

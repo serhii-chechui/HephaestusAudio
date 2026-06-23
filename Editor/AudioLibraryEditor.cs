@@ -101,7 +101,6 @@ namespace WTFGames.Hephaestus.AudioSystem.Editor {
             if (audioLibrary.audioLibraryConstants != null)
             {
                 _keys = audioLibrary.audioLibraryConstants.soundMapKeys.ToArray();
-                ConvertIntValuesFromKeys(_keys);
             }
 
             base.OnInspectorGUI();
@@ -116,16 +115,6 @@ namespace WTFGames.Hephaestus.AudioSystem.Editor {
             if (GUILayout.Button("Save Library", GUILayout.ExpandWidth(true), GUILayout.Height(32f))) {
                 EditorUtility.SetDirty(target);
                 AssetDatabase.SaveAssets();
-            }
-        }
-        
-        private void ConvertIntValuesFromKeys(string[] input)
-        {
-            var options = new int[input.Length];
-
-            for (int i = 0; i < options.Length; i++)
-            {
-                options[i] = i;
             }
         }
     }

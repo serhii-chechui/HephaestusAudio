@@ -17,7 +17,12 @@ namespace WTFGames.Hephaestus.AudioSystem {
             _audioManagerHandler = new GameObject("AudioManagerHandler").AddComponent<AudioManagerHandler>();
             _audioManagerHandler.Initialize(_audioManagerConfig);
 
-            _audioListener = _audioManagerHandler.gameObject.AddComponent<AudioListener>();
+            // Only add a listener if the scene doesn't already have one, otherwise
+            // Unity warns about multiple active AudioListeners and audio gets unpredictable.
+            if (UnityEngine.Object.FindObjectOfType<AudioListener>() == null)
+            {
+                _audioListener = _audioManagerHandler.gameObject.AddComponent<AudioListener>();
+            }
         }
 
         public void Dispose()

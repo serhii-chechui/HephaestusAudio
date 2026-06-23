@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-06-23
+
+### fix
+- Stopped coroutines by their stored handle instead of a fresh iterator that never matched the running coroutine.
+- Restarted the clip-end coroutine on every `Play` so `OnClipEnded` keeps firing on reused handlers.
+- Used `PlayDelayed` for second-based delays (`AudioSource.Play(ulong)` expects samples).
+- Emitted `Stop` events with the real clip key before resetting it.
+- Destroyed the `DontDestroyOnLoad` `AudioManagerHandler` on `Dispose` to fix a leak.
+- Made music exclusive: playing a new track stops the previous one.
+- Guarded `AudioLibrary.GetAudioClipByKey` against a missing key (was a `NullReferenceException`).
+- `IsMusicPlay`/`IsSoundPlay` now check the handler is actually playing.
+
+### perf
+- Pooled `AudioSourceHandler` instances per channel instead of destroying and recreating GameObjects on every `Play`.
+
+### feat
+- Added a `PlayId` token plus `Stop(int)`/`IsValid(int)` so callers can safely operate on a returned handle after it has been pooled and reused.
+- Made mixer group names and exposed volume parameters configurable via `AudioManagerConfig`.
+- Skipped adding an `AudioListener` when the scene already has one.
+
 ## [2.0.3] - 2023-08-31
 
 ### chore
