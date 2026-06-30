@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.0] - 2026-06-23
+## [2.1.0] - 2026-06-30
 
 ### fix
 - Stopped coroutines by their stored handle instead of a fresh iterator that never matched the running coroutine.
