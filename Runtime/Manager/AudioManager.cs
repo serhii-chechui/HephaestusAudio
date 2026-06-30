@@ -6,24 +6,31 @@ namespace WTFGames.Hephaestus.AudioSystem {
     public class AudioManager : IInitializable, IDisposable, IAudioManager
     {
         [Inject]
-        private AudioManagerConfig _audioManagerConfig;
+        private AudioManagerHandler.Factory _audioManagerHandlerFactory;
 
         private AudioManagerHandler _audioManagerHandler;
 
         private AudioListener _audioListener;
-        
+
         public void Initialize()
         {
-            _audioManagerHandler = new GameObject("AudioManagerHandler").AddComponent<AudioManagerHandler>();
-            _audioManagerHandler.Initialize(_audioManagerConfig);
+            // The factory creates the handler's GameObject and runs its [Inject]
+            // Construct method, so it is fully initialized when Create returns.
+            _audioManagerHandler = _audioManagerHandlerFactory.Create();
 
-            _audioListener = _audioManagerHandler.gameObject.AddComponent<AudioListener>();
+            // Only add a listener if the scene doesn't already have one, otherwise
+            // Unity warns about multiple active AudioListeners and audio gets unpredictable.
+            if (UnityEngine.Object.FindObjectOfType<AudioListener>() == null)
+            {
+                _audioListener = _audioManagerHandler.gameObject.AddComponent<AudioListener>();
+            }
         }
 
         public void Dispose()
         {
             if(_audioManagerHandler == null) return;
             _audioManagerHandler.Dispose();
+            _audioManagerHandler = null;
         }
 
         /// <inheritdoc cref="IAudioManager"/>

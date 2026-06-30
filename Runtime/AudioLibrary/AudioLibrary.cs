@@ -14,7 +14,12 @@ namespace WTFGames.Hephaestus.AudioSystem
 
         public AudioClip GetAudioClipByKey(int audioClipKey)
         {
-            return audioPairsList.Find(x => x.key == audioClipKey).audioClip;
+            var pair = audioPairsList.Find(x => x.key == audioClipKey);
+
+            if (pair != null) return pair.audioClip;
+
+            Debug.LogError($"Audio clip with key {audioClipKey} was not found.");
+            return null;
         }
     }
 }

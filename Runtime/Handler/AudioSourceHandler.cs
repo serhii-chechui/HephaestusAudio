@@ -11,11 +11,18 @@ namespace WTFGames.Hephaestus.AudioSystem
         public event Action<int> OnClipEnded;
         public event Action<int> OnClipStop;
 
-        private Coroutine _playingAudionCoroutine;
+        private Coroutine _playingAudioCoroutine;
 
         public bool IsPlaying => audioSource.isPlaying;
 
         public int AudioClipKey { get; private set; }
+
+        /// <summary>
+        /// Monotonically increasing token, bumped on every <see cref="Play"/>.
+        /// Callers can capture it to detect when a pooled handler has been
+        /// reused for a different clip.
+        /// </summary>
+        public int PlayId { get; private set; }
 
         [SerializeField]
         private AudioSource audioSource;
@@ -33,40 +40,70 @@ namespace WTFGames.Hephaestus.AudioSystem
         {
             audioSource.Stop();
             audioSource.clip = null;
-            if (_playingAudionCoroutine == null) return;
-            StopCoroutine(WaitUntilClipEnd_Co());
-            _playingAudionCoroutine = null;
+            AudioClipKey = 0;
+            StopPlayingCoroutine();
+
+            OnClipPlay = null;
+            OnClipEnded = null;
+            OnClipStop = null;
         }
 
         public void Play(int clipKey, AudioClip clip, bool loop = false, float volume = 1f, float delay = 0f)
         {
             AudioClipKey = clipKey;
+            PlayId++;
             audioSource.clip = clip;
             audioSource.loop = loop;
             audioSource.volume = volume;
-            audioSource.Play((ulong)delay);
-            OnClipPlay?.Invoke(AudioClipKey);
-            if (_playingAudionCoroutine != null)
-            {
-                StopCoroutine(WaitUntilClipEnd_Co());
-                _playingAudionCoroutine = null;
-            }
+
+            if (delay > 0f)
+                audioSource.PlayDelayed(delay);
             else
-            {
-                _playingAudionCoroutine = StartCoroutine(WaitUntilClipEnd_Co());
-            }
+                audioSource.Play();
+
+            OnClipPlay?.Invoke(AudioClipKey);
+
+            StopPlayingCoroutine();
+            _playingAudioCoroutine = StartCoroutine(WaitUntilClipEnd_Co());
         }
 
         public void Stop()
         {
-            AudioClipKey = 0;
             audioSource.Stop();
             audioSource.clip = null;
+
             OnClipEnded?.Invoke(AudioClipKey);
             OnClipStop?.Invoke(AudioClipKey);
-            if (_playingAudionCoroutine == null) return;
-            StopCoroutine(WaitUntilClipEnd_Co());
-            _playingAudionCoroutine = null;
+
+            AudioClipKey = 0;
+
+            StopPlayingCoroutine();
+        }
+
+        /// <summary>
+        /// Stops playback only if the handler still serves the given play token.
+        /// Safe to call on a handler that has since been pooled and reused.
+        /// </summary>
+        public void Stop(int playId)
+        {
+            if (playId != PlayId) return;
+            Stop();
+        }
+
+        /// <summary>
+        /// True while this handler is still playing the clip identified by the
+        /// given play token.
+        /// </summary>
+        public bool IsValid(int playId)
+        {
+            return playId == PlayId && audioSource.isPlaying;
+        }
+
+        private void StopPlayingCoroutine()
+        {
+            if (_playingAudioCoroutine == null) return;
+            StopCoroutine(_playingAudioCoroutine);
+            _playingAudioCoroutine = null;
         }
 
         private IEnumerator WaitUntilClipEnd_Co()
@@ -75,8 +112,9 @@ namespace WTFGames.Hephaestus.AudioSystem
             {
                 yield return null;
             }
-            
+
             OnClipEnded?.Invoke(AudioClipKey);
+            _playingAudioCoroutine = null;
         }
     }
 }
