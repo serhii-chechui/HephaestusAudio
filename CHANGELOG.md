@@ -17,6 +17,9 @@ All notable changes to this project will be documented in this file. The format 
 ### perf
 - Pooled `AudioSourceHandler` instances per channel instead of destroying and recreating GameObjects on every `Play`.
 
+### refactor
+- Created `AudioManagerHandler` through a Zenject `PlaceholderFactory` and injected its `AudioManagerConfig` via `[Inject]` instead of `new GameObject().AddComponent` and manual wiring.
+
 ### feat
 - Added a `PlayId` token plus `Stop(int)`/`IsValid(int)` so callers can safely operate on a returned handle after it has been pooled and reused.
 - Made mixer group names and exposed volume parameters configurable via `AudioManagerConfig`.

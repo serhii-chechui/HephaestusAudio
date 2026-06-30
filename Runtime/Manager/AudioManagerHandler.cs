@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
+using Zenject;
 
 namespace WTFGames.Hephaestus.AudioSystem
 {
@@ -30,7 +31,8 @@ namespace WTFGames.Hephaestus.AudioSystem
         private readonly Stack<AudioSourceHandler> _musicPool = new Stack<AudioSourceHandler>();
         private readonly Stack<AudioSourceHandler> _soundsPool = new Stack<AudioSourceHandler>();
 
-        public void Initialize(AudioManagerConfig audioManagerConfig)
+        [Inject]
+        public void Construct(AudioManagerConfig audioManagerConfig)
         {
             _audioManagerConfig = audioManagerConfig;
 
@@ -70,7 +72,13 @@ namespace WTFGames.Hephaestus.AudioSystem
                 _soundsAudioMixerGroup = soundsGroup;
             }
 
+            // Detach from the Zenject context so the object can survive scene loads.
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
+        }
+
+        public class Factory : PlaceholderFactory<AudioManagerHandler>
+        {
         }
 
         public void Dispose()
